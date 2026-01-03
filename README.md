@@ -181,7 +181,8 @@
 -   **Set required environment variables**
     
 
--   `export MONGODB_URI="mongodb://myUser:myPassword@172.22.0.2:27017/kindergarten?authSource=admin"  export DATABASE_NAME="kindergarten"` 
+-   `export MONGODB_URI="mongodb://myUser:myPassword@172.22.0.2:27017/kindergarten?authSource=admin"`
+-   `export DATABASE_NAME="kindergarten"` 
     
 -   **Run the Go application**
     
@@ -248,6 +249,11 @@
         
 -   **Run the Java application**
     
+-   **Set required environment variables**
+    
+
+-   `export MONGODB_URI="mongodb://myUser:myPassword@172.22.0.2:27017/kindergarten?authSource=admin"`
+-   `export DATABASE_NAME="kindergarten"` 
 
 1.  `java -jar target/<jar-file-name>.jar` 
     
