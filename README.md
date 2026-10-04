@@ -54,14 +54,6 @@
         
 2.  **Create a virtual environment** _(only needed if running locally, not in Docker)_
     
-
--   `python3 -m venv venv` 
-    
--   **Activate the virtual environment**
-    
-    -   **Linux/macOS:**
-
--   `source venv/bin/activate` 
     
 -   **Install dependencies**
     
