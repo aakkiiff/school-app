@@ -63,6 +63,7 @@
     
 
 `export MONGODB_URI="mongodb://myUser:myPassword@mongo:27017/kindergarten?authSource=admin"` 
+
 `export DATABASE_NAME="kindergarten"` 
  
 -   **Run the Python application**
@@ -237,6 +238,11 @@
 -   `mvn clean package` 
     
     -   This will create a `.jar` file in the `target` folder.
+ 
+`export MONGODB_URI="mongodb://myUser:myPassword@mongo:27017/kindergarten?authSource=admin"` 
+
+`export DATABASE_NAME="kindergarten"` 
+ 
         
 -   **Run the Java application**
     
