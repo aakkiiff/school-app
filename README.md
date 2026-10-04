@@ -217,8 +217,8 @@
 -   **Install Java runtime**
     
 
--   `sudo apt install openjdk-17-jre
-    java -version` 
+-   `sudo apt install openjdk-17-jre`
+    `java -version` 
     
     -   Ensure Java 17 or higher is installed.
         
