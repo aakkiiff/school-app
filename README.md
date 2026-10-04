@@ -87,9 +87,9 @@
 
 ### **Requirements**
 
--   Node.js and npm installed on your machine.
+-   Node.js and npm installed on your machine. version `24` recommended 
     
--   All backend services (Student, Teacher, Employee) running from previous steps.
+-   backend services running from previous steps.
     
 
 ----------
