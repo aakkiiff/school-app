@@ -1,5 +1,4 @@
 import os
-import logging
 from pymongo import MongoClient
 
 client = None
@@ -20,7 +19,6 @@ def connect_db():
 
     # Test connection
     client.admin.command("ping")
-    logging.info("Connected to MongoDB successfully!")
 
 
 def get_collection(name):

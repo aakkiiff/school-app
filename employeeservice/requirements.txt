@@ -1,4 +1,4 @@
 flask
 flask-cors
 pymongo
-elastic-apm[flask]
+python-dotenv

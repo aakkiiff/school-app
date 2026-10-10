@@ -1,0 +1,55 @@
+# Local secrets; copy .env.example to .env
+
+.env.*
+!.env.example
+!.env.*.example
+
+# Node.js dependencies and generated frontend assets
+node_modules/
+.pnp
+.pnp.*
+/frontend/build/
+
+# Python environments, bytecode, and tool caches
+.venv/
+.venv-*/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Java / Maven build output
+target/
+*.class
+
+# Go build and test output
+/studentservice/studentservice
+/studentservice/bin/
+*.test
+coverage.out
+
+# Test coverage reports
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+
+# Runtime logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS and editor temporary files
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+.idea/
+*.swp
+*.swo
+*~

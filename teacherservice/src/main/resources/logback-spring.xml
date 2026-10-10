@@ -1,0 +1,10 @@
+<configuration>
+    <appender name="JSON" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder class="com.kindergarten.teacherservice.logging.JsonLogEncoder"/>
+    </appender>
+    <logger name="com.kindergarten.teacherservice.logging.RequestLoggingFilter" level="INFO"/>
+    <root level="WARN">
+        <appender-ref ref="JSON"/>
+    </root>
+</configuration>

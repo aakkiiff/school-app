@@ -1,64 +1,44 @@
 package main
 
 import (
-	"log"
+	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
 	"studentservice/database"
 	"studentservice/handlers"
-	
-	"go.elastic.co/apm/v2"
+	"studentservice/observability"
+
+	"github.com/joho/godotenv"
 )
-
-// SIMPLIFIED APM initialization
-func initAPM() {
-	// APM auto-initializes from environment variables in Docker
-	if apm.DefaultTracer().Active() {
-		log.Println("APM initialized for Student Service")
-	} else {
-		log.Println("APM not active - using environment variables")
-	}
-}
-
-// SIMPLIFIED APM middleware
-func apmMiddleware(handler http.HandlerFunc, operationName string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		tracer := apm.DefaultTracer()
-		if tracer == nil || !tracer.Active() {
-			handler(w, r)
-			return
-		}
-		
-		tx := tracer.StartTransaction(operationName, "request")
-		defer tx.End()
-		
-		ctx := apm.ContextWithTransaction(r.Context(), tx)
-		req := r.WithContext(ctx)
-		handler(w, req)
-	}
-}
 
 func enableCors(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, traceparent, tracestate")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, traceparent, tracestate, X-Request-ID")
+	w.Header().Set("Access-Control-Expose-Headers", "X-Request-ID")
 }
 
 func main() {
-	// Initialize APM
-	initAPM()
+	observability.Configure()
+	if err := godotenv.Load(); err != nil && !os.IsNotExist(err) {
+		slog.Error("Environment configuration failed.", "event", "configuration_failed")
+		os.Exit(1)
+	}
 
 	// Database connection
 	if err := database.Connect(); err != nil {
-		log.Fatal("Database connection failed:", err)
+		slog.Error("Database connection failed.", "event", "database_connection_failed", "error_type", fmt.Sprintf("%T", err))
+		os.Exit(1)
 	}
 
-	// Student Routes with APM middleware
+	// Student Routes
 	http.HandleFunc("/add-student", func(w http.ResponseWriter, r *http.Request) {
 		enableCors(w)
 		if r.Method == http.MethodOptions {
 			return
 		}
-		apmMiddleware(handlers.AddStudent, "POST /add-student")(w, r)
+		handlers.AddStudent(w, r)
 	})
 
 	http.HandleFunc("/students", func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +46,7 @@ func main() {
 		if r.Method == http.MethodOptions {
 			return
 		}
-		apmMiddleware(handlers.GetStudents, "GET /students")(w, r)
+		handlers.GetStudents(w, r)
 	})
 
 	http.HandleFunc("/delete-student", func(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +58,7 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		apmMiddleware(handlers.DeleteStudent, "DELETE /delete-student")(w, r)
+		handlers.DeleteStudent(w, r)
 	})
 
 	http.HandleFunc("/update-student", func(w http.ResponseWriter, r *http.Request) {
@@ -90,9 +70,12 @@ func main() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		apmMiddleware(handlers.UpdateStudent, "PUT /update-student")(w, r)
+		handlers.UpdateStudent(w, r)
 	})
 
-	log.Println("Student Service running on port 5001")
-	log.Fatal(http.ListenAndServe(":5001", nil))
+	slog.Info("Service started.", "event", "service_started", "port", 5001)
+	if err := http.ListenAndServe(":5001", observability.Requests(http.DefaultServeMux)); err != nil {
+		slog.Error("HTTP server failed.", "event", "server_failed", "error_type", fmt.Sprintf("%T", err))
+		os.Exit(1)
+	}
 }

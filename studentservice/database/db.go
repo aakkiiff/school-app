@@ -2,7 +2,6 @@ package database
 
 import (
 	"context"
-	"log"
 	"os"
 	"time"
 
@@ -14,7 +13,7 @@ var Client *mongo.Client
 var Database *mongo.Database
 
 func Connect() error {
-	// From Environment variables 
+	// From Environment variables
 	connectionString := os.Getenv("MONGODB_URI")
 	// if connectionString == "" {
 	// 	connectionString = "mongodb://mongo:27017" // default value
@@ -35,7 +34,6 @@ func Connect() error {
 
 	Client = client
 	Database = client.Database("kindergarten")
-	log.Println("Connected to MongoDB successfully!")
 	return nil
 }
 

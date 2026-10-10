@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class TeacherService {
@@ -19,13 +22,23 @@ public class TeacherService {
 
     // Get all teachers
     public List<Teacher> getAllTeachers() {
-        return teacherRepository.findAll();
+        List<Teacher> teachers = teacherRepository.findAll();
+        for (Teacher teacher : teachers) {
+            if (teacher.getRecordId() == null) {
+                teacherRepository.assignRecordId(teacher.getId(), UUID.randomUUID().toString());
+                teacher.setRecordId(teacherRepository.findById(teacher.getId()).orElseThrow().getRecordId());
+            }
+        }
+        return teachers;
     }
 
     // Add new teacher
     public Teacher addTeacher(Teacher teacher) {
-        // MongoDB auto-generates id, no manual check needed
-        return teacherRepository.save(teacher);
+        if (teacher.getId() != null && teacherRepository.existsById(teacher.getId())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Teacher with this ID already exists");
+        }
+        teacher.setRecordId(UUID.randomUUID().toString());
+        return teacherRepository.insert(teacher);
     }
 
     // Update teacher by MongoDB id

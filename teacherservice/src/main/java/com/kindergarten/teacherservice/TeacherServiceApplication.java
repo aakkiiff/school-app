@@ -22,7 +22,7 @@ public class TeacherServiceApplication {
                         .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
-                        .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials")
+                        .exposedHeaders("Access-Control-Allow-Origin", "Access-Control-Allow-Credentials", "X-Request-ID")
                         .allowCredentials(false)
                         .maxAge(3600);
             }

@@ -1,70 +1,73 @@
-# Getting Started with Create React App
+# Kindred School Registry
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A responsive React dashboard for managing students, teachers, and employees.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Sidebar navigation and live record-count cards for each directory.
+- Search by name, roll number/ID, address, subject, or position.
+- Default ordering or alphabetical sorting.
+- Accessible, labeled add/edit forms, immutable record identifiers, and confirmed deletion.
+- Loading placeholders, service connectivity indicators, retry controls, and save/error notifications.
+- Mobile layouts, keyboard focus indicators, a skip-to-content link, and reduced-motion support.
 
-### `npm start`
+Record totals use real API data, not sample records. An unavailable service shows
+an explicit error and retains any previously loaded records. Its mutation controls
+are disabled until connectivity recovers. The dashboard refreshes all directories
+10 seconds after each background refresh completes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Development
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```sh
+npm ci
+npm start
+```
 
-### `npm test`
+This branch connects directly to locally running APIs (no reverse proxy):
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+| Directory | API base |
+| --- | --- |
+| Students | `http://localhost:5001` |
+| Teachers | `http://localhost:5002` |
+| Employees | `http://localhost:5003` |
+| Profile photo | `http://localhost:5004` |
 
-### `npm run build`
+`npm start` serves the frontend on http://localhost:3000. Compose runs only
+MongoDB/RabbitMQ/RustFS; start all APIs and the worker using the root
+[local launcher](../scripts/run-local.sh). Thumbnails use signed URLs directly to
+http://localhost:9000. The media API allows `FRONTEND_ORIGIN` from the root `.env`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Optional build-time overrides: `REACT_APP_STUDENT_API_URL`,
+`REACT_APP_TEACHER_API_URL`, `REACT_APP_EMPLOYEE_API_URL`, and
+`REACT_APP_PROFILE_API_URL`. These are browser addresses, not Docker hostnames.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Validation
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```sh
+CI=true npm test -- --watchAll=false
+npm run build
+```
 
-### `npm run eject`
+Photos can be chosen when creating any directory entry, or uploaded/replaced/removed
+using its photo button later. The shared school avatar uses the same asynchronous
+thumbnail pipeline. Initials remain until a first thumbnail is ready; replacements
+keep the last successful photo while processing. Status badges, reconnect, and
+retry actions make failures explicit. A failed upload never resubmits the saved
+registry entry. Limits: JPEG/PNG/WebP, 5 MiB, 20 megapixels (validated server-side).
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Tests mock the backend services and cover directory counts, navigation, search,
+sorting, all three CRUD workflows, rejected saves, failed connections, and empty
+or malformed API responses. Profile photo tests cover upload, validation, removal,
+expired presigned URLs, and an offline profile service.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Structure
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- [App](src/App.js): dashboard layout, API calls, notifications, and connectivity.
+- [Registry configuration](src/registry.js): service routes and directory-specific fields.
+- [RecordForm](src/components/RecordForm.js) and [RecordList](src/components/RecordList.js):
+  shared UI for all three directories.
+- [Photo](src/components/Photo.js), [ProfileAvatar](src/components/ProfileAvatar.js),
+  and [profileApi](src/profileApi.js): shared photo controls and processing-state polling.
+- [App styles](src/App.css): responsive layout, colors, and motion.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+No external fonts, icon libraries, or new dependencies are required.
